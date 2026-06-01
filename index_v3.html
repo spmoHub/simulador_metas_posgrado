@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simulador de metas de captación 2027</title>
+  <style>
+    :root {
+      --bg: #f3f6fb;
+      --card: #ffffff;
+      --ink: #102033;
+      --muted: #667085;
+      --line: #d9e2ec;
+      --primary: #1f5d36;
+      --primary-2: #2f7d4b;
+      --soft: #eaf5ee;
+      --warn: #fff4e5;
+      --warn-line: #f6b04b;
+      --bad: #b42318;
+      --shadow: 0 12px 30px rgba(16, 32, 51, 0.08);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, #eaf5ee 0, #f3f6fb 32%, #f8fafc 100%);
+      color: var(--ink);
+    }
+
+    .wrap {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 28px 18px 48px;
+    }
+
+    .hero {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .badge-row { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 11px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      background: var(--soft);
+      color: var(--primary);
+      border: 1px solid #cce7d5;
+    }
+
+    h1 {
+      font-size: clamp(28px, 4vw, 46px);
+      line-height: 1.05;
+      margin: 0;
+      letter-spacing: -0.04em;
+    }
+
+    p { color: var(--muted); margin: 0; line-height: 1.55; }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .grid.cols-3 { grid-template-columns: 1.05fr 1fr 1fr; }
+    .grid.top-grid { grid-template-columns: minmax(340px, 1.15fr) minmax(240px, 0.65fr); align-items: stretch; }
+    .grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.cols-5 { grid-template-columns: repeat(5, minmax(120px, 1fr)); }
+
+    @media (max-width: 980px) {
+      .grid.cols-3, .grid.cols-2, .grid.cols-5 { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(217, 226, 236, 0.9);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px;
+      backdrop-filter: blur(8px);
+    }
+
+    .card h2, .card h3 {
+      margin: 0 0 6px;
+      letter-spacing: -0.02em;
+    }
+
+    .card h2 { font-size: 19px; }
+    .card h3 { font-size: 17px; }
+
+    .controls {
+      display: grid;
+      gap: 12px;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    label {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    input, select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      padding: 10px 11px;
+      background: #fff;
+      color: var(--ink);
+      font-size: 15px;
+      outline: none;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--primary-2);
+      box-shadow: 0 0 0 3px rgba(47, 125, 75, 0.14);
+    }
+
+    .metric {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-height: 118px;
+    }
+
+    .metric.compact {
+      min-height: 92px;
+      padding: 14px 16px;
+      justify-content: center;
+    }
+
+    .metric small {
+      color: var(--muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .metric strong {
+      font-size: clamp(24px, 2.6vw, 34px);
+      letter-spacing: -0.04em;
+    }
+
+    .metric span { color: var(--muted); font-size: 13px; }
+    .metric.compact strong { font-size: clamp(22px, 2.3vw, 30px); }
+    .metric.compact span { font-size: 12px; }
+
+    .section { margin-top: 18px; }
+
+    .alert {
+      display: none;
+      border: 1px solid var(--warn-line);
+      background: var(--warn);
+      color: #7a4500;
+      padding: 12px 14px;
+      border-radius: 14px;
+      font-size: 14px;
+      margin-top: 12px;
+    }
+
+    .alert.show { display: block; }
+
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 15px;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 720px;
+      background: #fff;
+    }
+
+    th {
+      text-align: left;
+      background: #eff4f0;
+      color: #244134;
+      padding: 11px 12px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+      border-bottom: 1px solid var(--line);
+    }
+
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #eef2f6;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    td.num, th.num { text-align: right; }
+    tr:last-child td { border-bottom: 0; }
+    tfoot td { font-weight: 800; background: #f8fafc; }
+
+    .scenario-tabs {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    @media (max-width: 1100px) {
+      .scenario-tabs { grid-template-columns: 1fr; }
+    }
+
+    .scenario-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .scenario-title .pill {
+      border-radius: 999px;
+      background: var(--primary);
+      color: white;
+      padding: 6px 10px;
+      font-weight: 800;
+      font-size: 12px;
+    }
+
+    .moves {
+      display: grid;
+      gap: 12px;
+    }
+
+    .move-row {
+      display: grid;
+      grid-template-columns: 90px 1fr 120px 1fr;
+      gap: 10px;
+      align-items: end;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+    }
+
+    @media (max-width: 900px) {
+      .move-row { grid-template-columns: 1fr 1fr; }
+    }
+
+    .switch-line {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      padding-bottom: 10px;
+    }
+
+    .switch-line input { width: auto; }
+
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 14px;
+      padding: 11px 15px;
+      background: var(--primary);
+      color: white;
+      font-weight: 800;
+      cursor: pointer;
+      font-size: 14px;
+      box-shadow: 0 8px 18px rgba(31, 93, 54, 0.18);
+    }
+
+    button.secondary {
+      background: #fff;
+      color: var(--primary);
+      border: 1px solid #cce7d5;
+      box-shadow: none;
+    }
+
+    button:hover { filter: brightness(0.98); transform: translateY(-1px); }
+
+    .note {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .mini {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .campus-table table { min-width: 820px; }
+
+    .summary-text {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      padding: 14px;
+      color: #344054;
+      line-height: 1.65;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="hero">
+      <div class="badge-row">
+        <span class="badge">Simulador 2027</span>
+        <span class="badge">PMP + Piso + Techo</span>
+      </div>
+      <h1>Simulador de metas de captación por campus</h1>
+      <p>
+        Parte del PMP anual, reparte metas por periodo, permite escenarios de piso y techo, aplica movimientos entre campañas y desglosa automáticamente por campus usando la distribución anual PMP integrada.
+      </p>
+    </section>
+
+    <section class="grid top-grid">
+      <div class="card">
+        <h2>Controles principales</h2>
+        <div class="controls section">
+          <div class="field">
+            <label for="pmp">PMP anual</label>
+            <input id="pmp" type="number" value="9139" />
+          </div>
+          <div class="field">
+            <label for="asesores">Asesores</label>
+            <input id="asesores" type="number" value="131" />
+          </div>
+          <div class="field">
+            <label for="semanasTotales">Semanas totales</label>
+            <input id="semanasTotales" type="number" value="53" />
+          </div>
+          <div class="field">
+            <label for="metaAgoOct">Meta base Ago + Oct en PMP</label>
+            <input id="metaAgoOct" type="number" value="3320" />
+          </div>
+          <div class="field">
+            <label for="pisoPct">Piso sobre PMP (%)</label>
+            <input id="pisoPct" type="number" value="3" step="0.1" />
+          </div>
+          <div class="field">
+            <label for="techoPct">Techo sobre PMP (%)</label>
+            <input id="techoPct" type="number" value="5" step="0.1" />
+          </div>
+        </div>
+      </div>
+
+      <div class="card metric compact">
+        <small>Factor PMP</small>
+        <strong id="factorPmp">—</strong>
+        <span>Inscritos semanales por asesor = PMP / (asesores × semanas totales)</span>
+      </div>
+    </section>
+
+    <section class="card section">
+      <h2>Semanas por periodo</h2>
+      <p class="note">Si la suma de semanas no coincide con las semanas totales, el simulador mostrará una alerta.</p>
+      <div class="grid cols-5 section" id="periodInputs"></div>
+      <div id="weekAlert" class="alert"></div>
+    </section>
+
+    <section class="card section">
+      <h2>Ajustes entre campañas</h2>
+      <p class="note">Puedes activar hasta tres movimientos. Cada movimiento quita un porcentaje de la meta del periodo origen y lo agrega al periodo destino. Se aplica en PMP, Piso y Techo.</p>
+      <div class="moves section" id="movesBox"></div>
+    </section>
+
+    <section class="grid cols-3 section" id="metricCards"></section>
+
+    <section class="card section">
+      <h2>Resumen por escenario</h2>
+      <div class="table-wrap section">
+        <table id="scenarioSummary"></table>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="scenario-title">
+        <div>
+          <h2>Desglose de metas por periodo</h2>
+          <p class="note">Tres tablas separadas para comparar PMP, Piso y Techo.</p>
+        </div>
+      </div>
+      <div class="scenario-tabs" id="periodTables"></div>
+    </section>
+
+    <section class="section">
+      <div class="scenario-title">
+        <div>
+          <h2>Desglose por campus y periodo</h2>
+          <p class="note">Cada escenario se reparte por campus conservando la participación anual PMP y usando los totales por periodo de cada escenario.</p>
+        </div>
+      </div>
+      <div class="scenario-tabs" id="campusTables"></div>
+    </section>
+
+    <section class="card section">
+      <h2>Comparativo por periodo</h2>
+      <p class="note">Vista rápida de los tres escenarios por periodo.</p>
+      <div class="table-wrap section">
+        <table id="periodCompare"></table>
+      </div>
+    </section>
+
+    <section class="card section">
+      <h2>Resumen ejecutivo automático</h2>
+      <div class="summary-text" id="summaryText"></div>
+      <div class="btn-row">
+        <button onclick="exportCSV()">Exportar CSV tabular</button>
+        <button class="secondary" onclick="recalcular()">Recalcular</button>
+      </div>
+      <p class="mini section">El CSV se exporta con separador punto y coma (;), más la instrucción sep=; para que Excel lo abra en columnas.</p>
+    </section>
+  </main>
+
+  <script>
+    const campusPMP = [
+      { campus: "Ciudad Juárez", anual: 140 },
+      { campus: "Obregón", anual: 23 },
+      { campus: "Chihuahua", anual: 148 },
+      { campus: "Cumbres", anual: 210 },
+      { campus: "Durango", anual: 45 },
+      { campus: "Guadalupe", anual: 113 },
+      { campus: "Hermosillo", anual: 106 },
+      { campus: "Laguna", anual: 66 },
+      { campus: "Las Torres", anual: 402 },
+      { campus: "Nuevo Laredo", anual: 113 },
+      { campus: "Reynosa", anual: 148 },
+      { campus: "Saltillo", anual: 111 },
+      { campus: "San Nicolás", anual: 207 },
+      { campus: "Tijuana Río", anual: 80 },
+      { campus: "Tampico", anual: 46 },
+      { campus: "Álvaro Obregón", anual: 0 },
+      { campus: "Artz Pedregal", anual: 0 },
+      { campus: "Cuautitlán Izcalli", anual: 157 },
+      { campus: "Ferreria", anual: 181 },
+      { campus: "Las Américas", anual: 31 },
+      { campus: "Mitikah", anual: 92 },
+      { campus: "Reforma", anual: 65 },
+      { campus: "Santa Fe", anual: 58 },
+      { campus: "Satélite", anual: 35 },
+      { campus: "Cuernavaca", anual: 67 },
+      { campus: "Cancún", anual: 46 },
+      { campus: "Mérida", anual: 40 },
+      { campus: "Puebla", anual: 133 },
+      { campus: "Toluca", anual: 201 },
+      { campus: "Veracruz", anual: 58 },
+      { campus: "Villahermosa", anual: 77 },
+      { campus: "Culiacán", anual: 235 },
+      { campus: "Guadalajara", anual: 159 },
+      { campus: "León", anual: 90 },
+      { campus: "Los Mochis", anual: 72 },
+      { campus: "Mazatlán", anual: 116 },
+      { campus: "Querétaro", anual: 151 },
+      { campus: "San Luis Potosí", anual: 146 },
+      { campus: "Zapopan", anual: 131 },
+      { campus: "Morelia", anual: 57 },
+      { campus: "Zacatecas", anual: 40 },
+      { campus: "Aguascalientes", anual: 70 },
+      { campus: "Educación Remota", anual: 3880 },
+      { campus: "Vicerrectoría Empresas", anual: 793 }
+    ];
+
+    const periodos = [
+      { key: "agosto", nombre: "Agosto", semanas: 11, grupo: "agoOct" },
+      { key: "octubre", nombre: "Octubre", semanas: 9, grupo: "agoOct" },
+      { key: "enero", nombre: "Enero", semanas: 13, grupo: "resto" },
+      { key: "marzo", nombre: "Marzo", semanas: 9, grupo: "resto" },
+      { key: "junio", nombre: "Junio", semanas: 11, grupo: "resto" }
+    ];
+
+    const moveDefaults = [
+      { activo: false, origen: "octubre", destino: "agosto", pct: 5 },
+      { activo: false, origen: "marzo", destino: "enero", pct: 0 },
+      { activo: false, origen: "junio", destino: "agosto", pct: 0 }
+    ];
+
+    let lastModel = null;
+
+    const $ = (id) => document.getElementById(id);
+    const num = (id) => Number($(id).value || 0);
+    const fmt = (n) => new Intl.NumberFormat("es-MX", { maximumFractionDigits: 0 }).format(Number.isFinite(n) ? n : 0);
+    const fmtDec = (n, d = 3) => new Intl.NumberFormat("es-MX", { minimumFractionDigits: d, maximumFractionDigits: d }).format(Number.isFinite(n) ? n : 0);
+
+    function init() {
+      renderPeriodInputs();
+      renderMoves();
+      document.querySelectorAll("input, select").forEach(el => el.addEventListener("input", recalcular));
+      recalcular();
+    }
+
+    function renderPeriodInputs() {
+      const box = $("periodInputs");
+      box.innerHTML = periodos.map(p => `
+        <div class="field">
+          <label for="sem_${p.key}">${p.nombre}</label>
+          <input id="sem_${p.key}" type="number" value="${p.semanas}" min="0" step="1" />
+        </div>
+      `).join("");
+    }
+
+    function renderMoves() {
+      const box = $("movesBox");
+      box.innerHTML = moveDefaults.map((m, i) => `
+        <div class="move-row">
+          <div>
+            <label>Activo</label>
+            <div class="switch-line">
+              <input id="mov_activo_${i}" type="checkbox" ${m.activo ? "checked" : ""} />
+              <span class="mini">Ajuste ${i + 1}</span>
+            </div>
+          </div>
+          <div class="field">
+            <label for="mov_origen_${i}">Quitar de</label>
+            <select id="mov_origen_${i}">${periodos.map(p => `<option value="${p.key}" ${p.key === m.origen ? "selected" : ""}>${p.nombre}</option>`).join("")}</select>
+          </div>
+          <div class="field">
+            <label for="mov_pct_${i}">% a mover</label>
+            <input id="mov_pct_${i}" type="number" value="${m.pct}" min="0" max="100" step="0.1" />
+          </div>
+          <div class="field">
+            <label for="mov_destino_${i}">Poner en</label>
+            <select id="mov_destino_${i}">${periodos.map(p => `<option value="${p.key}" ${p.key === m.destino ? "selected" : ""}>${p.nombre}</option>`).join("")}</select>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function getPeriodosActuales() {
+      return periodos.map(p => ({ ...p, semanas: Number($(`sem_${p.key}`).value || 0) }));
+    }
+
+    function getMoves() {
+      return [0, 1, 2].map(i => ({
+        activo: $(`mov_activo_${i}`).checked,
+        origen: $(`mov_origen_${i}`).value,
+        destino: $(`mov_destino_${i}`).value,
+        pct: Number($(`mov_pct_${i}`).value || 0)
+      }));
+    }
+
+    function allocate(total, items, weightFn, keyFn) {
+      const target = Math.round(total);
+      const weightSum = items.reduce((acc, item) => acc + Math.max(0, weightFn(item)), 0);
+      const rows = items.map((item, idx) => {
+        const raw = weightSum > 0 ? target * Math.max(0, weightFn(item)) / weightSum : 0;
+        return {
+          key: keyFn(item, idx),
+          item,
+          raw,
+          base: Math.floor(raw),
+          rem: raw - Math.floor(raw)
+        };
+      });
+      let left = target - rows.reduce((acc, r) => acc + r.base, 0);
+      const order = [...rows].sort((a, b) => b.rem - a.rem || String(a.key).localeCompare(String(b.key)));
+      for (let i = 0; i < left; i++) {
+        order[i % order.length].base += 1;
+      }
+      return rows.reduce((acc, r) => {
+        acc[r.key] = r.base;
+        return acc;
+      }, {});
+    }
+
+    function calcularEscenario(nombre, pct, pmp, asesores, semanasTotales, metaAgoOctBase, periodosActuales, moves) {
+      const metaTotal = Math.round(pmp * (1 + pct / 100));
+      const factorEscenario = pmp > 0 ? metaTotal / pmp : 0;
+      const metaAgoOct = Math.round(metaAgoOctBase * factorEscenario);
+      const metaResto = metaTotal - metaAgoOct;
+      const agoOct = periodosActuales.filter(p => p.grupo === "agoOct");
+      const resto = periodosActuales.filter(p => p.grupo === "resto");
+
+      const metasAgoOct = allocate(metaAgoOct, agoOct, p => p.semanas, p => p.key);
+      const metasResto = allocate(metaResto, resto, p => p.semanas, p => p.key);
+      const antesAjuste = { ...metasAgoOct, ...metasResto };
+      const despues = { ...antesAjuste };
+      const ajustesNetos = Object.fromEntries(periodosActuales.map(p => [p.key, 0]));
+
+      moves.forEach(m => {
+        if (!m.activo || m.origen === m.destino || m.pct <= 0) return;
+        const origenActual = despues[m.origen] || 0;
+        const cantidad = Math.min(origenActual, Math.round(origenActual * m.pct / 100));
+        despues[m.origen] -= cantidad;
+        despues[m.destino] = (despues[m.destino] || 0) + cantidad;
+        ajustesNetos[m.origen] -= cantidad;
+        ajustesNetos[m.destino] += cantidad;
+      });
+
+      const periodRows = periodosActuales.map(p => ({
+        key: p.key,
+        periodo: p.nombre,
+        semanas: p.semanas,
+        antes: antesAjuste[p.key] || 0,
+        ajuste: ajustesNetos[p.key] || 0,
+        meta: despues[p.key] || 0,
+        metaSemanal: p.semanas > 0 ? (despues[p.key] || 0) / p.semanas : 0
+      }));
+
+      const campusRows = distribuirCampusPorPeriodo(periodRows);
+
+      return {
+        nombre,
+        pct,
+        metaTotal,
+        factorSemanalAsesor: asesores * semanasTotales > 0 ? metaTotal / (asesores * semanasTotales) : 0,
+        equivalenteMensual: asesores * semanasTotales > 0 ? metaTotal / (asesores * semanasTotales) * 4.33 : 0,
+        metaAgoOct,
+        metaResto,
+        periodRows,
+        campusRows
+      };
+    }
+
+    function distribuirCampusPorPeriodo(periodRows) {
+      const campusNames = campusPMP.map(c => c.campus);
+      const result = campusPMP.map(c => ({ campus: c.campus, agosto: 0, octubre: 0, enero: 0, marzo: 0, junio: 0, total: 0 }));
+
+      periodRows.forEach(pr => {
+        const alloc = allocate(pr.meta, campusPMP, c => c.anual, c => c.campus);
+        result.forEach(row => {
+          row[pr.key] = alloc[row.campus] || 0;
+        });
+      });
+
+      result.forEach(row => {
+        row.total = periodRows.reduce((acc, pr) => acc + (row[pr.key] || 0), 0);
+      });
+
+      return result;
+    }
+
+    function recalcular() {
+      const pmp = num("pmp");
+      const asesores = num("asesores");
+      const semanasTotales = num("semanasTotales");
+      const metaAgoOctBase = num("metaAgoOct");
+      const pisoPct = num("pisoPct");
+      const techoPct = num("techoPct");
+      const periodosActuales = getPeriodosActuales();
+      const moves = getMoves();
+      const campusSum = campusPMP.reduce((acc, c) => acc + c.anual, 0);
+      const sumWeeks = periodosActuales.reduce((acc, p) => acc + p.semanas, 0);
+
+      const scenarios = [
+        calcularEscenario("PMP", 0, pmp, asesores, semanasTotales, metaAgoOctBase, periodosActuales, moves),
+        calcularEscenario("Piso", pisoPct, pmp, asesores, semanasTotales, metaAgoOctBase, periodosActuales, moves),
+        calcularEscenario("Techo", techoPct, pmp, asesores, semanasTotales, metaAgoOctBase, periodosActuales, moves)
+      ];
+
+      lastModel = { pmp, asesores, semanasTotales, metaAgoOctBase, pisoPct, techoPct, campusSum, sumWeeks, scenarios, periodosActuales };
+
+      renderAlerts(sumWeeks, semanasTotales);
+      renderTopMetrics(pmp, asesores, semanasTotales, campusSum);
+      renderScenarioCards(scenarios);
+      renderScenarioSummary(scenarios);
+      renderPeriodTables(scenarios);
+      renderCampusTables(scenarios);
+      renderPeriodCompare(scenarios, periodosActuales);
+      renderSummary(lastModel);
+    }
+
+    function renderAlerts(sumWeeks, semanasTotales) {
+      const alert = $("weekAlert");
+      if (sumWeeks !== semanasTotales) {
+        alert.className = "alert show";
+        alert.innerHTML = `La suma de semanas por periodo es <b>${sumWeeks}</b>, pero las semanas totales configuradas son <b>${semanasTotales}</b>. Revisa la captura antes de presentar el resultado.`;
+      } else {
+        alert.className = "alert";
+        alert.innerHTML = "";
+      }
+    }
+
+    function renderTopMetrics(pmp, asesores, semanasTotales, campusSum) {
+      const factor = asesores * semanasTotales > 0 ? pmp / (asesores * semanasTotales) : 0;
+      $("factorPmp").textContent = fmtDec(factor, 3);
+    }
+
+    function renderScenarioCards(scenarios) {
+      const box = $("metricCards");
+      box.innerHTML = scenarios.map(s => `
+        <div class="card metric">
+          <small>${s.nombre}</small>
+          <strong>${fmt(s.metaTotal)}</strong>
+          <span>${fmtDec(s.factorSemanalAsesor, 3)} inscritos semanales por asesor</span>
+        </div>
+      `).join("");
+    }
+
+    function renderScenarioSummary(scenarios) {
+      $("scenarioSummary").innerHTML = `
+        <thead>
+          <tr>
+            <th>Escenario</th>
+            <th class="num">% sobre PMP</th>
+            <th class="num">Meta anual</th>
+            <th class="num">Ago + Oct</th>
+            <th class="num">Ene + Mar + Jun</th>
+            <th class="num">Factor semanal asesor</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${scenarios.map(s => `
+            <tr>
+              <td><b>${s.nombre}</b></td>
+              <td class="num">${fmtDec(s.pct, 1)}%</td>
+              <td class="num"><b>${fmt(s.metaTotal)}</b></td>
+              <td class="num">${fmt(s.metaAgoOct)}</td>
+              <td class="num">${fmt(s.metaResto)}</td>
+              <td class="num"><b>${fmtDec(s.factorSemanalAsesor, 3)}</b></td>
+            </tr>
+          `).join("")}
+        </tbody>
+      `;
+    }
+
+    function renderPeriodTables(scenarios) {
+      const box = $("periodTables");
+      box.innerHTML = scenarios.map(s => `
+        <div class="card">
+          <div class="scenario-title">
+            <h3>${s.nombre}</h3>
+            <span class="pill">${fmt(s.metaTotal)} NI</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Periodo</th>
+                  <th class="num">Semanas</th>
+                  <th class="num">Antes ajuste</th>
+                  <th class="num">Ajuste</th>
+                  <th class="num">Meta final</th>
+                  <th class="num">Meta semanal</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${s.periodRows.map(r => `
+                  <tr>
+                    <td>${r.periodo}</td>
+                    <td class="num">${fmt(r.semanas)}</td>
+                    <td class="num">${fmt(r.antes)}</td>
+                    <td class="num">${fmt(r.ajuste)}</td>
+                    <td class="num"><b>${fmt(r.meta)}</b></td>
+                    <td class="num">${fmtDec(r.metaSemanal, 1)}</td>
+                  </tr>
+                `).join("")}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td>Total</td>
+                  <td class="num">${fmt(s.periodRows.reduce((a, r) => a + r.semanas, 0))}</td>
+                  <td class="num">${fmt(s.periodRows.reduce((a, r) => a + r.antes, 0))}</td>
+                  <td class="num">${fmt(s.periodRows.reduce((a, r) => a + r.ajuste, 0))}</td>
+                  <td class="num">${fmt(s.periodRows.reduce((a, r) => a + r.meta, 0))}</td>
+                  <td class="num">—</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function renderCampusTables(scenarios) {
+      const box = $("campusTables");
+      box.innerHTML = scenarios.map(s => `
+        <div class="card campus-table">
+          <div class="scenario-title">
+            <h3>${s.nombre}</h3>
+            <span class="pill">${fmt(s.metaTotal)} NI</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Campus</th>
+                  <th class="num">Agosto</th>
+                  <th class="num">Octubre</th>
+                  <th class="num">Enero</th>
+                  <th class="num">Marzo</th>
+                  <th class="num">Junio</th>
+                  <th class="num">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${s.campusRows.map(r => `
+                  <tr>
+                    <td>${r.campus}</td>
+                    <td class="num">${fmt(r.agosto)}</td>
+                    <td class="num">${fmt(r.octubre)}</td>
+                    <td class="num">${fmt(r.enero)}</td>
+                    <td class="num">${fmt(r.marzo)}</td>
+                    <td class="num">${fmt(r.junio)}</td>
+                    <td class="num"><b>${fmt(r.total)}</b></td>
+                  </tr>
+                `).join("")}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td>Total</td>
+                  <td class="num">${fmt(s.campusRows.reduce((a, r) => a + r.agosto, 0))}</td>
+                  <td class="num">${fmt(s.campusRows.reduce((a, r) => a + r.octubre, 0))}</td>
+                  <td class="num">${fmt(s.campusRows.reduce((a, r) => a + r.enero, 0))}</td>
+                  <td class="num">${fmt(s.campusRows.reduce((a, r) => a + r.marzo, 0))}</td>
+                  <td class="num">${fmt(s.campusRows.reduce((a, r) => a + r.junio, 0))}</td>
+                  <td class="num">${fmt(s.campusRows.reduce((a, r) => a + r.total, 0))}</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function renderPeriodCompare(scenarios, periodosActuales) {
+      $("periodCompare").innerHTML = `
+        <thead>
+          <tr>
+            <th>Periodo</th>
+            <th class="num">Semanas</th>
+            ${scenarios.map(s => `<th class="num">${s.nombre}</th>`).join("")}
+          </tr>
+        </thead>
+        <tbody>
+          ${periodosActuales.map(p => `
+            <tr>
+              <td>${p.nombre}</td>
+              <td class="num">${fmt(p.semanas)}</td>
+              ${scenarios.map(s => {
+                const row = s.periodRows.find(r => r.key === p.key);
+                return `<td class="num"><b>${fmt(row ? row.meta : 0)}</b></td>`;
+              }).join("")}
+            </tr>
+          `).join("")}
+        </tbody>
+        <tfoot>
+          <tr>
+            <td>Total</td>
+            <td class="num">${fmt(periodosActuales.reduce((a, p) => a + p.semanas, 0))}</td>
+            ${scenarios.map(s => `<td class="num">${fmt(s.metaTotal)}</td>`).join("")}
+          </tr>
+        </tfoot>
+      `;
+    }
+
+    function renderSummary(model) {
+      const pmp = model.scenarios[0];
+      const piso = model.scenarios[1];
+      const techo = model.scenarios[2];
+      $("summaryText").innerHTML = `
+        El modelo parte de un PMP anual de <b>${fmt(model.pmp)}</b> inscritos y una distribución PMP por campus que suma <b>${fmt(model.campusSum)}</b>. Con <b>${fmt(model.asesores)}</b> asesores y <b>${fmt(model.semanasTotales)}</b> semanas, el factor base del PMP es <b>${fmtDec(pmp.factorSemanalAsesor, 3)}</b> inscritos semanales por asesor. La meta base de agosto y octubre es <b>${fmt(model.metaAgoOctBase)}</b> en PMP y se escala proporcionalmente en Piso y Techo. El resto se asigna a enero, marzo y junio. Para cada escenario, las metas por periodo se distribuyen por campus conservando la participación anual PMP de cada campus, y después se muestran en tres tablas separadas para facilitar la comparación.
+      `;
+    }
+
+    function csvEscape(v) {
+      const s = String(v ?? "");
+      if (s.includes(";") || s.includes('"') || s.includes("\n")) return '"' + s.replaceAll('"', '""') + '"';
+      return s;
+    }
+
+    function row(vals) { return vals.map(csvEscape).join(";"); }
+
+    function exportCSV() {
+      if (!lastModel) recalcular();
+      const lines = [];
+      lines.push("sep=;");
+      lines.push(row(["Reporte de metas de captación 2027"]));
+      lines.push(row(["PMP", lastModel.pmp]));
+      lines.push(row(["Asesores", lastModel.asesores]));
+      lines.push(row(["Semanas totales", lastModel.semanasTotales]));
+      lines.push(row(["Suma semanas periodos", lastModel.sumWeeks]));
+      lines.push(row(["Meta base Ago+Oct", lastModel.metaAgoOctBase]));
+      lines.push("");
+
+      lines.push(row(["RESUMEN_ESCENARIOS"]));
+      lines.push(row(["Escenario", "% sobre PMP", "Meta anual", "Ago+Oct", "Ene+Mar+Jun", "Factor semanal asesor"]));
+      lastModel.scenarios.forEach(s => {
+        lines.push(row([s.nombre, s.pct, s.metaTotal, s.metaAgoOct, s.metaResto, s.factorSemanalAsesor.toFixed(6)]));
+      });
+      lines.push("");
+
+      lastModel.scenarios.forEach(s => {
+        lines.push(row([`PERIODOS_${s.nombre.toUpperCase()}`]));
+        lines.push(row(["Periodo", "Semanas", "Antes ajuste", "Ajuste", "Meta final", "Meta semanal"]));
+        s.periodRows.forEach(r => lines.push(row([r.periodo, r.semanas, r.antes, r.ajuste, r.meta, r.metaSemanal.toFixed(4)])));
+        lines.push(row(["Total", s.periodRows.reduce((a, r) => a + r.semanas, 0), s.periodRows.reduce((a, r) => a + r.antes, 0), s.periodRows.reduce((a, r) => a + r.ajuste, 0), s.periodRows.reduce((a, r) => a + r.meta, 0), ""]));
+        lines.push("");
+      });
+
+      lastModel.scenarios.forEach(s => {
+        lines.push(row([`CAMPUS_${s.nombre.toUpperCase()}`]));
+        lines.push(row(["Campus", "Agosto", "Octubre", "Enero", "Marzo", "Junio", "Total"]));
+        s.campusRows.forEach(r => lines.push(row([r.campus, r.agosto, r.octubre, r.enero, r.marzo, r.junio, r.total])));
+        lines.push(row(["Total", s.campusRows.reduce((a, r) => a + r.agosto, 0), s.campusRows.reduce((a, r) => a + r.octubre, 0), s.campusRows.reduce((a, r) => a + r.enero, 0), s.campusRows.reduce((a, r) => a + r.marzo, 0), s.campusRows.reduce((a, r) => a + r.junio, 0), s.campusRows.reduce((a, r) => a + r.total, 0)]));
+        lines.push("");
+      });
+
+      const blob = new Blob(["\ufeff" + lines.join("\n")], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "reporte_metas_captacion_2027.csv";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    window.addEventListener("DOMContentLoaded", init);
+  </script>
+</body>
+</html>
