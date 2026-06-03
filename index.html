@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Simulador de metas de captación 2027 · corrección visual 3</title>
+  <title>Simulador de metas de captación 2027 · v5</title>
   <style>
     :root {
       --bg:#f4f7fb; --card:#ffffff; --ink:#102033; --muted:#667085; --line:#d9e2ec;
@@ -16,80 +16,61 @@
       background: radial-gradient(circle at top left,#eaf5ee 0,#f4f7fb 35%,#f8fafc 100%);
       color:var(--ink);
     }
-    .wrap { max-width:1320px; margin:0 auto; padding:26px 18px 48px; }
-    .hero {
-      display:grid; grid-template-columns:1fr auto; gap:18px; align-items:start; margin-bottom:18px;
-    }
+    .wrap { max-width:1420px; margin:0 auto; padding:26px 18px 48px; }
+    .hero { display:grid; grid-template-columns:1fr auto; gap:18px; align-items:start; margin-bottom:18px; }
     .pill { display:inline-flex; align-items:center; gap:8px; border:1px solid var(--line); background:#fff; color:var(--primary); padding:7px 11px; border-radius:999px; font-size:12px; font-weight:700; }
     h1 { margin:10px 0 6px; font-size:32px; line-height:1.1; letter-spacing:-.03em; }
     p { margin:0; }
     .note { color:var(--muted); font-size:13px; line-height:1.45; }
-    .grid { display:grid; gap:14px; }
-    .grid-2 { grid-template-columns:repeat(2,minmax(0,1fr)); }
-    .grid-3 { grid-template-columns:repeat(3,minmax(0,1fr)); }
-    .grid-4 { grid-template-columns:repeat(4,minmax(0,1fr)); }
-    .card {
-      background:var(--card); border:1px solid rgba(217,226,236,.9); border-radius:var(--radius); box-shadow:var(--shadow);
-    }
+    .card { background:var(--card); border:1px solid rgba(217,226,236,.9); border-radius:var(--radius); box-shadow:var(--shadow); }
     .card-pad { padding:18px; }
     .section-title { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; margin-bottom:12px; }
     h2 { margin:0; font-size:18px; letter-spacing:-.01em; }
+    h3 { margin:0 0 4px; }
     label { display:block; font-size:12px; color:var(--muted); font-weight:800; margin-bottom:6px; }
     input, select {
       width:100%; height:40px; border:1px solid var(--line); border-radius:12px; padding:0 11px; font-size:14px; color:var(--ink); background:#fff;
     }
     input[readonly] { background:#f3f6fb; color:#475467; font-weight:700; }
-    .controls { display:grid; grid-template-columns:1.1fr .9fr .9fr .8fr .8fr .8fr; gap:12px; }
+    .controls { display:grid; grid-template-columns:1.05fr .8fr .85fr .75fr .75fr 1fr; gap:12px; }
     .compact-metrics { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin:14px 0; }
     .metric {
-      padding:13px 14px; min-height:88px; border:1px solid var(--line); border-radius:16px; background:#fff; box-shadow:0 8px 20px rgba(16,32,51,.05);
+      padding:13px 14px; min-height:86px; border:1px solid var(--line); border-radius:16px; background:#fff; box-shadow:0 8px 20px rgba(16,32,51,.05);
     }
     .metric .label { color:var(--muted); font-size:12px; font-weight:800; }
-    .metric .value { font-size:25px; font-weight:850; letter-spacing:-.03em; margin-top:7px; }
+    .metric .value { font-size:24px; font-weight:850; letter-spacing:-.03em; margin-top:7px; }
     .metric .sub { color:var(--muted); font-size:12px; margin-top:2px; line-height:1.25; }
     .metric.small .value { font-size:21px; }
-    .muted-box { background:#f8fafc; border:1px dashed var(--line); border-radius:15px; padding:12px; }
     .formula-card { margin:0 0 14px; }
-    .formula-grid { display:grid; grid-template-columns:1.1fr 1fr; gap:14px; align-items:center; }
+    .formula-grid { display:grid; grid-template-columns:1.05fr 1fr; gap:14px; align-items:center; }
     .formula-box { background:#f8fafc; border:1px solid var(--line); border-radius:16px; padding:14px; }
     .formula-main { font-size:16px; font-weight:850; color:var(--primary); line-height:1.4; }
     .formula-sub { margin-top:6px; color:var(--muted); font-size:13px; line-height:1.45; }
-    @media (max-width:1000px) { .formula-grid { grid-template-columns:1fr; } }
-    .divider { height:1px; background:var(--line); margin:18px 0; }
-    .period-inputs { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:10px; }
-    .period-inputs input { text-align:center; font-weight:800; }
+    .period-static { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:10px; }
+    .period-pill { border:1px solid var(--line); background:#fff; border-radius:16px; padding:12px; text-align:center; }
+    .period-pill .name { font-size:12px; color:var(--muted); font-weight:850; }
+    .period-pill .weeks { font-size:22px; font-weight:900; margin-top:4px; }
+    .contrib-grid { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:10px; }
+    .contrib-grid input { text-align:center; font-weight:850; }
     .alert { display:none; margin-top:12px; padding:11px 13px; border-radius:14px; border:1px solid #f6b04b; background:var(--warn); color:#7a3e00; font-size:13px; line-height:1.4; }
     .alert.show { display:block; }
-    .moves { display:grid; grid-template-columns:1fr; gap:16px; }
-    .move-card {
-      width:100%; border:1px solid var(--line); border-radius:18px; padding:18px; background:#fff;
-      display:grid; grid-template-columns:130px minmax(320px,1fr) 180px minmax(320px,1fr);
-      gap:14px; align-items:end;
-    }
-    .move-card label { text-transform:uppercase; letter-spacing:.03em; color:#667085; font-size:12px; }
-    .move-active label:first-child { margin-bottom:8px; }
-    .switchrow { display:flex; align-items:center; gap:10px; font-size:13px; color:var(--muted); font-weight:600; height:46px; text-transform:none !important; letter-spacing:0 !important; }
-    .switchrow input { width:18px; height:18px; flex:0 0 auto; }
-    .move-card select, .move-card input[type="number"] { height:48px; border-radius:14px; font-size:15px; }
     table { width:100%; border-collapse:separate; border-spacing:0; font-size:13px; }
-    th { position:sticky; top:0; z-index:1; text-align:left; padding:10px; background:#f1f6f3; color:#284438; border-bottom:1px solid var(--line); font-size:12px; }
-    td { padding:9px 10px; border-bottom:1px solid #edf2f7; vertical-align:middle; }
+    th { position:sticky; top:0; z-index:1; text-align:left; padding:10px; background:#f1f6f3; color:#284438; border-bottom:1px solid var(--line); font-size:12px; white-space:nowrap; }
+    td { padding:9px 10px; border-bottom:1px solid #edf2f7; vertical-align:middle; white-space:nowrap; }
     tfoot td { background:#f8fafc; font-weight:900; border-top:1px solid var(--line); }
     .num { text-align:right; font-variant-numeric:tabular-nums; }
     .table-wrap { overflow:auto; border:1px solid var(--line); border-radius:16px; background:#fff; max-height:620px; }
     .scenario-cards { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
-    .scenario-card h3 { margin:0 0 4px; }
-    .scenario-card .badge { display:inline-block; border-radius:999px; background:var(--soft); color:var(--primary); font-size:12px; font-weight:850; padding:5px 9px; }
+    .badge { display:inline-block; border-radius:999px; background:var(--soft); color:var(--primary); font-size:12px; font-weight:850; padding:5px 9px; }
     .btns { display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
-    button {
-      border:0; border-radius:14px; background:var(--primary); color:#fff; padding:11px 14px; font-weight:850; cursor:pointer;
-      box-shadow:0 8px 18px rgba(31,93,54,.22);
-    }
+    button { border:0; border-radius:14px; background:var(--primary); color:#fff; padding:11px 14px; font-weight:850; cursor:pointer; box-shadow:0 8px 18px rgba(31,93,54,.22); }
     button.secondary { background:#fff; color:var(--primary); border:1px solid var(--line); box-shadow:none; }
     .summary { line-height:1.65; color:#344054; font-size:14px; }
-    .hidden { display:none !important; }
-    @media (max-width:1000px) {
-      .hero, .grid-2, .grid-3, .grid-4, .controls, .compact-metrics, .scenario-cards, .period-inputs, .move-card { grid-template-columns:1fr; }
+    .split { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:14px; }
+    .pos { color:#067647; font-weight:850; }
+    .neg { color:#b42318; font-weight:850; }
+    @media (max-width:1100px) {
+      .hero, .controls, .compact-metrics, .formula-grid, .period-static, .contrib-grid, .scenario-cards, .split { grid-template-columns:1fr; }
       h1 { font-size:26px; }
     }
   </style>
@@ -98,9 +79,9 @@
   <div class="wrap">
     <div class="hero">
       <div>
-        <span class="pill">Simulador 2027 · PMP / Piso / Techo · v2</span>
+        <span class="pill">Simulador 2027 · PMP / Piso / Techo · v5</span>
         <h1>Simulador de metas de captación por nivel y campus</h1>
-        <p class="note">Selecciona nivel, ajusta semanas y escenarios. El PMP queda fijo por nivel; Piso y Techo se calculan desde el PMP y se distribuyen por periodo y campus.</p>
+        <p class="note">Selecciona el nivel, ajusta ejecutivos y escenarios. El PMP queda fijo por nivel y los históricos se muestran para comparar contra 2025.</p>
       </div>
       <div class="btns">
         <button onclick="exportCSV()">Exportar CSV tabular</button>
@@ -161,38 +142,40 @@
       <div class="formula-grid">
         <div class="formula-box">
           <div class="formula-main">Factor semanal por ejecutivo = Meta anual / (Ejecutivos × Semanas totales)</div>
-          <div class="formula-sub">Para Piso y Techo se usa la meta anual del escenario correspondiente.</div>
+          <div class="formula-sub">En cada escenario se utiliza la meta anual correspondiente.</div>
         </div>
         <div class="formula-box" id="formulaFactor"></div>
       </div>
     </div>
 
-    <div class="card card-pad section-weeks">
-      <div class="section-title">
-        <div>
-          <h2>Semanas por periodo</h2>
-          <p class="note">Si la suma no coincide con las semanas totales, aparecerá una alerta.</p>
+    <div class="split">
+      <div class="card card-pad">
+        <div class="section-title">
+          <div>
+            <h2>Semanas por periodo</h2>
+            <p class="note">Referencia operativa para interpretar el calendario de captación.</p>
+          </div>
         </div>
+        <div class="period-static" id="periodStatic"></div>
       </div>
-      <div class="period-inputs" id="periodInputs"></div>
-      <div class="alert" id="weekAlert"></div>
-    </div>
 
-    <div class="card card-pad section-moves" style="margin-top:14px;">
-      <div class="section-title">
-        <div>
-          <h2>Ajustes entre campañas</h2>
-          <p class="note">Puedes activar hasta tres movimientos. Cada movimiento quita un porcentaje de la meta del periodo origen y lo agrega al periodo destino. En Profesional, el PMP se mantiene fijo; los ajustes aplican a Piso y Techo.</p>
+      <div class="card card-pad">
+        <div class="section-title">
+          <div>
+            <h2>% de contribución por periodo</h2>
+            <p class="note">Define el peso de cada periodo dentro de la meta anual.</p>
+          </div>
         </div>
+        <div class="contrib-grid" id="contribInputs"></div>
+        <div class="alert" id="contribAlert"></div>
       </div>
-      <div class="moves" id="movesBox"></div>
     </div>
 
     <div class="card card-pad" style="margin-top:14px;">
       <div class="section-title">
         <div>
           <h2>Resumen de escenarios</h2>
-          <p class="note">El factor semanal por ejecutivo se calcula como meta anual / (ejecutivos × semanas totales).</p>
+          <p class="note">Comparativo anual contra 2025 y factor semanal por ejecutivo.</p>
         </div>
       </div>
       <div class="table-wrap" style="max-height:none;">
@@ -205,6 +188,8 @@
               <th class="num">Ago+Oct</th>
               <th class="num">Ene+Mar+Jun</th>
               <th class="num">Factor semanal ejecutivo</th>
+              <th class="num">Dif. vs 2025</th>
+              <th class="num">% vs 2025</th>
             </tr>
           </thead>
           <tbody id="scenarioSummary"></tbody>
@@ -239,82 +224,46 @@
   </div>
 
   <script>
-    const LEVELS = {"posgrado": {"label": "Posgrado", "pmp": 9139, "metaAgoOct": 3320, "campusMode": "annual", "periodTargets": null, "campusAnnual": [{"campus": "Ciudad Juárez", "anual": 140}, {"campus": "Obregón", "anual": 23}, {"campus": "Chihuahua", "anual": 148}, {"campus": "Cumbres", "anual": 210}, {"campus": "Durango", "anual": 45}, {"campus": "Guadalupe", "anual": 113}, {"campus": "Hermosillo", "anual": 106}, {"campus": "Laguna", "anual": 66}, {"campus": "Las Torres", "anual": 402}, {"campus": "Nuevo Laredo", "anual": 113}, {"campus": "Reynosa", "anual": 148}, {"campus": "Saltillo", "anual": 111}, {"campus": "San Nicolás", "anual": 207}, {"campus": "Tijuana Río", "anual": 80}, {"campus": "Tampico", "anual": 46}, {"campus": "Álvaro Obregón", "anual": 0}, {"campus": "Artz Pedregal", "anual": 0}, {"campus": "Cuautitlán Izcalli", "anual": 157}, {"campus": "Ferreria", "anual": 181}, {"campus": "Las Américas", "anual": 31}, {"campus": "Mitikah", "anual": 92}, {"campus": "Reforma", "anual": 65}, {"campus": "Santa Fe", "anual": 58}, {"campus": "Satélite", "anual": 35}, {"campus": "Cuernavaca", "anual": 67}, {"campus": "Cancún", "anual": 46}, {"campus": "Mérida", "anual": 40}, {"campus": "Puebla", "anual": 133}, {"campus": "Toluca", "anual": 201}, {"campus": "Veracruz", "anual": 58}, {"campus": "Villahermosa", "anual": 77}, {"campus": "Culiacán", "anual": 235}, {"campus": "Guadalajara", "anual": 159}, {"campus": "León", "anual": 90}, {"campus": "Los Mochis", "anual": 72}, {"campus": "Mazatlán", "anual": 116}, {"campus": "Querétaro", "anual": 151}, {"campus": "San Luis Potosí", "anual": 146}, {"campus": "Zapopan", "anual": 131}, {"campus": "Morelia", "anual": 57}, {"campus": "Zacatecas", "anual": 40}, {"campus": "Aguascalientes", "anual": 70}, {"campus": "Educación Remota", "anual": 3880}, {"campus": "Vicerrectoría Empresas", "anual": 793}], "campusPeriodWeights": null}, "profesional": {"label": "Profesional", "pmp": 4633, "metaAgoOct": 1819, "campusMode": "period", "periodTargets": {"agosto": 952, "octubre": 867, "enero": 1020, "marzo": 778, "junio": 1016}, "campusAnnual": null, "campusPeriodWeights": [{"campus": "Ciudad Juárez", "agosto": 28, "octubre": 26, "enero": 28, "marzo": 22, "junio": 28}, {"campus": "Obregón", "agosto": 2, "octubre": 2, "enero": 2, "marzo": 1, "junio": 2}, {"campus": "Chihuahua", "agosto": 9, "octubre": 8, "enero": 9, "marzo": 7, "junio": 9}, {"campus": "Cumbres", "agosto": 22, "octubre": 20, "enero": 21, "marzo": 16, "junio": 21}, {"campus": "Durango", "agosto": 3, "octubre": 3, "enero": 3, "marzo": 2, "junio": 3}, {"campus": "Guadalupe", "agosto": 22, "octubre": 22, "enero": 25, "marzo": 19, "junio": 25}, {"campus": "Hermosillo", "agosto": 7, "octubre": 7, "enero": 7, "marzo": 5, "junio": 7}, {"campus": "Laguna", "agosto": 12, "octubre": 11, "enero": 11, "marzo": 9, "junio": 11}, {"campus": "Las Torres", "agosto": 30, "octubre": 25, "enero": 39, "marzo": 30, "junio": 39}, {"campus": "Nuevo Laredo", "agosto": 6, "octubre": 6, "enero": 6, "marzo": 5, "junio": 6}, {"campus": "Reynosa", "agosto": 15, "octubre": 13, "enero": 14, "marzo": 11, "junio": 13}, {"campus": "Saltillo", "agosto": 9, "octubre": 8, "enero": 8, "marzo": 6, "junio": 8}, {"campus": "San Nicolás", "agosto": 28, "octubre": 25, "enero": 29, "marzo": 22, "junio": 28}, {"campus": "Tijuana Río", "agosto": 13, "octubre": 11, "enero": 12, "marzo": 9, "junio": 12}, {"campus": "Tampico", "agosto": 6, "octubre": 6, "enero": 6, "marzo": 5, "junio": 6}, {"campus": "Álvaro Obregón", "agosto": 0, "octubre": 0, "enero": 0, "marzo": 0, "junio": 0}, {"campus": "Artz Pedregal", "agosto": 0, "octubre": 0, "enero": 0, "marzo": 0, "junio": 0}, {"campus": "Cuautitlán Izcalli", "agosto": 24, "octubre": 23, "enero": 28, "marzo": 21, "junio": 27}, {"campus": "Ferreria", "agosto": 24, "octubre": 22, "enero": 24, "marzo": 19, "junio": 24}, {"campus": "Las Américas", "agosto": 10, "octubre": 9, "enero": 10, "marzo": 7, "junio": 10}, {"campus": "Mitikah", "agosto": 21, "octubre": 20, "enero": 20, "marzo": 16, "junio": 20}, {"campus": "Reforma", "agosto": 8, "octubre": 8, "enero": 8, "marzo": 6, "junio": 8}, {"campus": "Santa Fe", "agosto": 6, "octubre": 5, "enero": 6, "marzo": 4, "junio": 6}, {"campus": "Satélite", "agosto": 10, "octubre": 9, "enero": 9, "marzo": 7, "junio": 9}, {"campus": "Cuernavaca", "agosto": 6, "octubre": 6, "enero": 6, "marzo": 5, "junio": 6}, {"campus": "Cancún", "agosto": 9, "octubre": 8, "enero": 9, "marzo": 7, "junio": 9}, {"campus": "Mérida", "agosto": 4, "octubre": 4, "enero": 4, "marzo": 3, "junio": 4}, {"campus": "Puebla", "agosto": 10, "octubre": 10, "enero": 10, "marzo": 8, "junio": 10}, {"campus": "Toluca", "agosto": 13, "octubre": 12, "enero": 12, "marzo": 9, "junio": 12}, {"campus": "Veracruz", "agosto": 4, "octubre": 4, "enero": 4, "marzo": 3, "junio": 4}, {"campus": "Villahermosa", "agosto": 6, "octubre": 5, "enero": 5, "marzo": 4, "junio": 5}, {"campus": "Culiacán", "agosto": 10, "octubre": 9, "enero": 10, "marzo": 7, "junio": 10}, {"campus": "Guadalajara", "agosto": 21, "octubre": 19, "enero": 22, "marzo": 16, "junio": 21}, {"campus": "León", "agosto": 12, "octubre": 11, "enero": 12, "marzo": 9, "junio": 12}, {"campus": "Los Mochis", "agosto": 3, "octubre": 2, "enero": 3, "marzo": 2, "junio": 3}, {"campus": "Mazatlán", "agosto": 9, "octubre": 8, "enero": 8, "marzo": 6, "junio": 8}, {"campus": "Querétaro", "agosto": 7, "octubre": 7, "enero": 7, "marzo": 5, "junio": 7}, {"campus": "San Luis Potosí", "agosto": 8, "octubre": 8, "enero": 8, "marzo": 6, "junio": 8}, {"campus": "Zapopan", "agosto": 16, "octubre": 15, "enero": 15, "marzo": 12, "junio": 16}, {"campus": "Morelia", "agosto": 2, "octubre": 2, "enero": 2, "marzo": 1, "junio": 2}, {"campus": "Zacatecas", "agosto": 3, "octubre": 2, "enero": 3, "marzo": 2, "junio": 3}, {"campus": "Aguascalientes", "agosto": 14, "octubre": 13, "enero": 14, "marzo": 10, "junio": 14}, {"campus": "Educación Remota", "agosto": 414, "octubre": 379, "enero": 461, "marzo": 351, "junio": 461}, {"campus": "Vicerrectoría Empresas", "agosto": 65, "octubre": 56, "enero": 82, "marzo": 62, "junio": 82}]}};
-
-    const periodos = [
-      { key:"agosto", label:"Agosto", weeks:11, group:"agoOct" },
-      { key:"octubre", label:"Octubre", weeks:9, group:"agoOct" },
-      { key:"enero", label:"Enero", weeks:13, group:"resto" },
-      { key:"marzo", label:"Marzo", weeks:9, group:"resto" },
-      { key:"junio", label:"Junio", weeks:11, group:"resto" }
-    ];
-
-    const moveDefaults = [
-      { active:false, origen:"octubre", destino:"agosto", pct:5 },
-      { active:false, origen:"marzo", destino:"enero", pct:0 },
-      { active:false, origen:"junio", destino:"agosto", pct:0 }
-    ];
-
+    const LEVELS = {"posgrado": {"label": "Posgrado", "pmp": 9139, "metaAgoOct": 3320, "campusMode": "annual", "periodTargets": null, "campusAnnual": [{"campus": "Ciudad Juárez", "anual": 140}, {"campus": "Obregón", "anual": 23}, {"campus": "Chihuahua", "anual": 148}, {"campus": "Cumbres", "anual": 210}, {"campus": "Durango", "anual": 45}, {"campus": "Guadalupe", "anual": 113}, {"campus": "Hermosillo", "anual": 106}, {"campus": "Laguna", "anual": 66}, {"campus": "Las Torres", "anual": 402}, {"campus": "Nuevo Laredo", "anual": 113}, {"campus": "Reynosa", "anual": 148}, {"campus": "Saltillo", "anual": 111}, {"campus": "San Nicolás", "anual": 207}, {"campus": "Tijuana Río", "anual": 80}, {"campus": "Tampico", "anual": 46}, {"campus": "Álvaro Obregón", "anual": 0}, {"campus": "Artz Pedregal", "anual": 0}, {"campus": "Cuautitlán Izcalli", "anual": 157}, {"campus": "Ferreria", "anual": 181}, {"campus": "Las Américas", "anual": 31}, {"campus": "Mitikah", "anual": 92}, {"campus": "Reforma", "anual": 65}, {"campus": "Santa Fe", "anual": 58}, {"campus": "Satélite", "anual": 35}, {"campus": "Cuernavaca", "anual": 67}, {"campus": "Cancún", "anual": 46}, {"campus": "Mérida", "anual": 40}, {"campus": "Puebla", "anual": 133}, {"campus": "Toluca", "anual": 201}, {"campus": "Veracruz", "anual": 58}, {"campus": "Villahermosa", "anual": 77}, {"campus": "Culiacán", "anual": 235}, {"campus": "Guadalajara", "anual": 159}, {"campus": "León", "anual": 90}, {"campus": "Los Mochis", "anual": 72}, {"campus": "Mazatlán", "anual": 116}, {"campus": "Querétaro", "anual": 151}, {"campus": "San Luis Potosí", "anual": 146}, {"campus": "Zapopan", "anual": 131}, {"campus": "Morelia", "anual": 57}, {"campus": "Zacatecas", "anual": 40}, {"campus": "Aguascalientes", "anual": 70}, {"campus": "Educación Remota", "anual": 3880}, {"campus": "Vicerrectoría Empresas", "anual": 793}], "campusPeriodWeights": null, "pmpPeriodTargets": {"agosto": 1826, "octubre": 1494, "enero": 2292, "marzo": 1587, "junio": 1940}, "contributionDefaults": {"agosto": 19.980304190830505, "octubre": 16.347521610679504, "enero": 25.079330342488237, "marzo": 17.365138417769995, "junio": 21.22770543823175}, "history": {"Aguascalientes": {"2022": 0, "2023": 0, "2024": 0, "2025": 5}, "Álvaro Obregón": {"2022": 20, "2023": 0, "2024": 0, "2025": 0}, "Artz Pedregal": {"2022": 48, "2023": 21, "2024": 10, "2025": 0}, "Educación Remota": {"2022": 3778, "2023": 4181, "2024": 4893, "2025": 4473}, "Cancún": {"2022": 96, "2023": 72, "2024": 43, "2025": 62}, "Ciudad Juárez": {"2022": 280, "2023": 222, "2024": 162, "2025": 96}, "Obregón": {"2022": 32, "2023": 29, "2024": 11, "2025": 24}, "Chihuahua": {"2022": 216, "2023": 167, "2024": 158, "2025": 149}, "Cuautitlán Izcalli": {"2022": 161, "2023": 141, "2024": 150, "2025": 197}, "Cuernavaca": {"2022": 68, "2023": 67, "2024": 72, "2025": 62}, "Culiacán": {"2022": 255, "2023": 196, "2024": 235, "2025": 195}, "Cumbres": {"2022": 233, "2023": 196, "2024": 215, "2025": 135}, "Durango": {"2022": 104, "2023": 77, "2024": 49, "2025": 40}, "Ferreria": {"2022": 211, "2023": 137, "2024": 193, "2025": 243}, "Guadalajara": {"2022": 218, "2023": 124, "2024": 162, "2025": 161}, "Guadalupe": {"2022": 175, "2023": 118, "2024": 112, "2025": 143}, "Hermosillo": {"2022": 98, "2023": 109, "2024": 118, "2025": 51}, "Laguna": {"2022": 117, "2023": 70, "2024": 65, "2025": 72}, "Las Américas": {"2022": 116, "2023": 36, "2024": 31, "2025": 26}, "Las Torres": {"2022": 492, "2023": 351, "2024": 423, "2025": 370}, "León": {"2022": 15, "2023": 60, "2024": 84, "2025": 58}, "Los Mochis": {"2022": 80, "2023": 82, "2024": 80, "2025": 33}, "Mazatlán": {"2022": 128, "2023": 119, "2024": 129, "2025": 70}, "Mérida": {"2022": 49, "2023": 42, "2024": 44, "2025": 46}, "Mitikah": {"2022": 80, "2023": 66, "2024": 83, "2025": 88}, "Morelia": {"2022": 0, "2023": 1, "2024": 28, "2025": 32}, "Nuevo Laredo": {"2022": 120, "2023": 119, "2024": 115, "2025": 67}, "Puebla": {"2022": 123, "2023": 146, "2024": 108, "2025": 117}, "Querétaro": {"2022": 154, "2023": 131, "2024": 166, "2025": 96}, "Reforma": {"2022": 147, "2023": 70, "2024": 68, "2025": 59}, "Reynosa": {"2022": 164, "2023": 155, "2024": 163, "2025": 122}, "Saltillo": {"2022": 116, "2023": 76, "2024": 97, "2025": 59}, "San Luis Potosí": {"2022": 128, "2023": 116, "2024": 163, "2025": 127}, "San Nicolás": {"2022": 297, "2023": 241, "2024": 216, "2025": 203}, "Santa Fe": {"2022": 5, "2023": 12, "2024": 32, "2025": 40}, "Satélite": {"2022": 13, "2023": 13, "2024": 28, "2025": 24}, "Tampico": {"2022": 0, "2023": 0, "2024": 16, "2025": 42}, "Tijuana Río": {"2022": 89, "2023": 52, "2024": 71, "2025": 49}, "Toluca": {"2022": 222, "2023": 159, "2024": 195, "2025": 231}, "Veracruz": {"2022": 85, "2023": 82, "2024": 62, "2025": 62}, "Villahermosa": {"2022": 93, "2023": 61, "2024": 85, "2025": 65}, "Zacatecas": {"2022": 44, "2023": 30, "2024": 43, "2025": 32}, "Zapopan": {"2022": 210, "2023": 204, "2024": 141, "2025": 108}, "Vicerrectoría Empresas": {"2022": 0, "2023": 0, "2024": 0, "2025": 0}}}, "profesional": {"label": "Profesional", "pmp": 4633, "metaAgoOct": 1819, "campusMode": "period", "periodTargets": {"agosto": 952, "octubre": 867, "enero": 1020, "marzo": 778, "junio": 1016}, "campusAnnual": null, "campusPeriodWeights": [{"campus": "Ciudad Juárez", "agosto": 28, "octubre": 26, "enero": 28, "marzo": 22, "junio": 28}, {"campus": "Obregón", "agosto": 2, "octubre": 2, "enero": 2, "marzo": 1, "junio": 2}, {"campus": "Chihuahua", "agosto": 9, "octubre": 8, "enero": 9, "marzo": 7, "junio": 9}, {"campus": "Cumbres", "agosto": 22, "octubre": 20, "enero": 21, "marzo": 16, "junio": 21}, {"campus": "Durango", "agosto": 3, "octubre": 3, "enero": 3, "marzo": 2, "junio": 3}, {"campus": "Guadalupe", "agosto": 22, "octubre": 22, "enero": 25, "marzo": 19, "junio": 25}, {"campus": "Hermosillo", "agosto": 7, "octubre": 7, "enero": 7, "marzo": 5, "junio": 7}, {"campus": "Laguna", "agosto": 12, "octubre": 11, "enero": 11, "marzo": 9, "junio": 11}, {"campus": "Las Torres", "agosto": 30, "octubre": 25, "enero": 39, "marzo": 30, "junio": 39}, {"campus": "Nuevo Laredo", "agosto": 6, "octubre": 6, "enero": 6, "marzo": 5, "junio": 6}, {"campus": "Reynosa", "agosto": 15, "octubre": 13, "enero": 14, "marzo": 11, "junio": 13}, {"campus": "Saltillo", "agosto": 9, "octubre": 8, "enero": 8, "marzo": 6, "junio": 8}, {"campus": "San Nicolás", "agosto": 28, "octubre": 25, "enero": 29, "marzo": 22, "junio": 28}, {"campus": "Tijuana Río", "agosto": 13, "octubre": 11, "enero": 12, "marzo": 9, "junio": 12}, {"campus": "Tampico", "agosto": 6, "octubre": 6, "enero": 6, "marzo": 5, "junio": 6}, {"campus": "Álvaro Obregón", "agosto": 0, "octubre": 0, "enero": 0, "marzo": 0, "junio": 0}, {"campus": "Artz Pedregal", "agosto": 0, "octubre": 0, "enero": 0, "marzo": 0, "junio": 0}, {"campus": "Cuautitlán Izcalli", "agosto": 24, "octubre": 23, "enero": 28, "marzo": 21, "junio": 27}, {"campus": "Ferreria", "agosto": 24, "octubre": 22, "enero": 24, "marzo": 19, "junio": 24}, {"campus": "Las Américas", "agosto": 10, "octubre": 9, "enero": 10, "marzo": 7, "junio": 10}, {"campus": "Mitikah", "agosto": 21, "octubre": 20, "enero": 20, "marzo": 16, "junio": 20}, {"campus": "Reforma", "agosto": 8, "octubre": 8, "enero": 8, "marzo": 6, "junio": 8}, {"campus": "Santa Fe", "agosto": 6, "octubre": 5, "enero": 6, "marzo": 4, "junio": 6}, {"campus": "Satélite", "agosto": 10, "octubre": 9, "enero": 9, "marzo": 7, "junio": 9}, {"campus": "Cuernavaca", "agosto": 6, "octubre": 6, "enero": 6, "marzo": 5, "junio": 6}, {"campus": "Cancún", "agosto": 9, "octubre": 8, "enero": 9, "marzo": 7, "junio": 9}, {"campus": "Mérida", "agosto": 4, "octubre": 4, "enero": 4, "marzo": 3, "junio": 4}, {"campus": "Puebla", "agosto": 10, "octubre": 10, "enero": 10, "marzo": 8, "junio": 10}, {"campus": "Toluca", "agosto": 13, "octubre": 12, "enero": 12, "marzo": 9, "junio": 12}, {"campus": "Veracruz", "agosto": 4, "octubre": 4, "enero": 4, "marzo": 3, "junio": 4}, {"campus": "Villahermosa", "agosto": 6, "octubre": 5, "enero": 5, "marzo": 4, "junio": 5}, {"campus": "Culiacán", "agosto": 10, "octubre": 9, "enero": 10, "marzo": 7, "junio": 10}, {"campus": "Guadalajara", "agosto": 21, "octubre": 19, "enero": 22, "marzo": 16, "junio": 21}, {"campus": "León", "agosto": 12, "octubre": 11, "enero": 12, "marzo": 9, "junio": 12}, {"campus": "Los Mochis", "agosto": 3, "octubre": 2, "enero": 3, "marzo": 2, "junio": 3}, {"campus": "Mazatlán", "agosto": 9, "octubre": 8, "enero": 8, "marzo": 6, "junio": 8}, {"campus": "Querétaro", "agosto": 7, "octubre": 7, "enero": 7, "marzo": 5, "junio": 7}, {"campus": "San Luis Potosí", "agosto": 8, "octubre": 8, "enero": 8, "marzo": 6, "junio": 8}, {"campus": "Zapopan", "agosto": 16, "octubre": 15, "enero": 15, "marzo": 12, "junio": 16}, {"campus": "Morelia", "agosto": 2, "octubre": 2, "enero": 2, "marzo": 1, "junio": 2}, {"campus": "Zacatecas", "agosto": 3, "octubre": 2, "enero": 3, "marzo": 2, "junio": 3}, {"campus": "Aguascalientes", "agosto": 14, "octubre": 13, "enero": 14, "marzo": 10, "junio": 14}, {"campus": "Educación Remota", "agosto": 414, "octubre": 379, "enero": 461, "marzo": 351, "junio": 461}, {"campus": "Vicerrectoría Empresas", "agosto": 65, "octubre": 56, "enero": 82, "marzo": 62, "junio": 82}], "pmpPeriodTargets": {"agosto": 952, "octubre": 867, "enero": 1020, "marzo": 778, "junio": 1016}, "contributionDefaults": {"agosto": 20.548240880638897, "octubre": 18.713576516296136, "enero": 22.0159723721131, "marzo": 16.79257500539607, "junio": 21.929635225555796}, "history": {"Álvaro Obregón": {"2022": 22, "2023": 0, "2024": 0, "2025": 0}, "Artz Pedregal": {"2022": 35, "2023": 13, "2024": 2, "2025": 0}, "Educación Remota": {"2022": 2545, "2023": 2499, "2024": 2580, "2025": 2096}, "Cancún": {"2022": 96, "2023": 49, "2024": 42, "2025": 37}, "Ciudad Juárez": {"2022": 152, "2023": 138, "2024": 126, "2025": 77}, "Obregón": {"2022": 36, "2023": 17, "2024": 7, "2025": 10}, "Chihuahua": {"2022": 137, "2023": 80, "2024": 48, "2025": 43}, "Cuautitlán Izcalli": {"2022": 184, "2023": 147, "2024": 128, "2025": 114}, "Cuernavaca": {"2022": 31, "2023": 30, "2024": 21, "2025": 25}, "Culiacán": {"2022": 35, "2023": 50, "2024": 39, "2025": 20}, "Cumbres": {"2022": 173, "2023": 167, "2024": 111, "2025": 72}, "Durango": {"2022": 27, "2023": 24, "2024": 14, "2025": 16}, "Ferreria": {"2022": 121, "2023": 69, "2024": 123, "2025": 81}, "Guadalajara": {"2022": 122, "2023": 92, "2024": 99, "2025": 92}, "Guadalupe": {"2022": 170, "2023": 126, "2024": 122, "2025": 99}, "Hermosillo": {"2022": 30, "2023": 30, "2024": 35, "2025": 12}, "Laguna": {"2022": 51, "2023": 33, "2024": 55, "2025": 36}, "Las Américas": {"2022": 140, "2023": 106, "2024": 43, "2025": 49}, "Las Torres": {"2022": 322, "2023": 211, "2024": 192, "2025": 129}, "León": {"2022": 1, "2023": 35, "2024": 47, "2025": 23}, "Los Mochis": {"2022": 19, "2023": 16, "2024": 11, "2025": 8}, "Mazatlán": {"2022": 52, "2023": 29, "2024": 36, "2025": 16}, "Mérida": {"2022": 12, "2023": 8, "2024": 21, "2025": 12}, "Mitikah": {"2022": 74, "2023": 68, "2024": 93, "2025": 77}, "Morelia": {"2022": 0, "2023": 0, "2024": 5, "2025": 14}, "Nuevo Laredo": {"2022": 35, "2023": 31, "2024": 30, "2025": 15}, "Puebla": {"2022": 54, "2023": 58, "2024": 48, "2025": 53}, "Querétaro": {"2022": 77, "2023": 55, "2024": 27, "2025": 34}, "Reforma": {"2022": 123, "2023": 58, "2024": 37, "2025": 45}, "Reynosa": {"2022": 50, "2023": 58, "2024": 64, "2025": 32}, "Saltillo": {"2022": 71, "2023": 41, "2024": 36, "2025": 31}, "San Luis Potosí": {"2022": 27, "2023": 34, "2024": 40, "2025": 19}, "San Nicolás": {"2022": 215, "2023": 181, "2024": 143, "2025": 107}, "Santa Fe": {"2022": 5, "2023": 20, "2024": 25, "2025": 24}, "Satélite": {"2022": 10, "2023": 24, "2024": 36, "2025": 43}, "Tampico": {"2022": 0, "2023": 0, "2024": 0, "2025": 43}, "Tijuana Río": {"2022": 93, "2023": 59, "2024": 52, "2025": 40}, "Toluca": {"2022": 80, "2023": 81, "2024": 59, "2025": 54}, "Veracruz": {"2022": 17, "2023": 27, "2024": 11, "2025": 28}, "Villahermosa": {"2022": 28, "2023": 22, "2024": 26, "2025": 20}, "Zacatecas": {"2022": 20, "2023": 19, "2024": 14, "2025": 6}, "Zapopan": {"2022": 207, "2023": 130, "2024": 77, "2025": 68}, "Aguascalientes": {"2022": 0, "2023": 0, "2024": 0, "2025": 0}, "Vicerrectoría Empresas": {"2022": 0, "2023": 0, "2024": 0, "2025": 0}}}};
+    const PERIODS = [{"key": "agosto", "label": "Agosto", "weeks": 11}, {"key": "octubre", "label": "Octubre", "weeks": 9}, {"key": "enero", "label": "Enero", "weeks": 13}, {"key": "marzo", "label": "Marzo", "weeks": 9}, {"key": "junio", "label": "Junio", "weeks": 11}];
+    const YEARS = ["2022","2023","2024","2025"];
     let lastModel = null;
     const $ = (id) => document.getElementById(id);
     const num = (id) => Number($(id).value || 0);
     const fmt = (n) => new Intl.NumberFormat("es-MX", { maximumFractionDigits: 0 }).format(Number.isFinite(n) ? n : 0);
-    const fmtDec = (n, d=3) => new Intl.NumberFormat("es-MX", { minimumFractionDigits:d, maximumFractionDigits:d }).format(Number.isFinite(n) ? n : 0);
+    const fmtDec = (n, d=2) => new Intl.NumberFormat("es-MX", { minimumFractionDigits:d, maximumFractionDigits:d }).format(Number.isFinite(n) ? n : 0);
+    const signed = (n) => `${n > 0 ? "+" : ""}${fmt(n)}`;
+    const pctFmt = (n) => Number.isFinite(n) ? `${n > 0 ? "+" : ""}${fmtDec(n*100,1)}%` : "—";
 
     function syncNivel() {
       const cfg = LEVELS[$("nivel").value];
       $("pmp").value = cfg.pmp;
       $("metaAgoOct").value = cfg.metaAgoOct;
+      renderContributionInputs(cfg);
     }
 
-    function renderPeriodInputs() {
-      const box = $("periodInputs");
-      box.innerHTML = periodos.map(p => `
-        <div>
-          <label>${p.label}</label>
-          <input id="sem_${p.key}" type="number" value="${p.weeks}" min="0" oninput="recalc()" />
+    function renderStaticWeeks() {
+      $("periodStatic").innerHTML = PERIODS.map(p => `
+        <div class="period-pill">
+          <div class="name">${p.label}</div>
+          <div class="weeks">${p.weeks}</div>
+          <div class="note">semanas</div>
         </div>`).join("");
     }
 
-    function renderMoves() {
-      const box = $("movesBox");
-      const options = periodos.map(p => `<option value="${p.key}">${p.label}</option>`).join("");
-      box.innerHTML = moveDefaults.map((m, i) => `
-        <div class="move-card">
-          <div class="move-active">
-            <label>Activo</label>
-            <label class="switchrow"><input id="mov_act_${i}" type="checkbox" ${m.active ? "checked" : ""} onchange="recalc()" /> Ajuste ${i+1}</label>
-          </div>
+    function renderContributionInputs(cfg) {
+      $("contribInputs").innerHTML = PERIODS.map(p => {
+        const val = cfg.contributionDefaults[p.key] ?? 0;
+        return `
           <div>
-            <label>Quitar de</label>
-            <select id="mov_ori_${i}" onchange="recalc()">${options}</select>
-          </div>
-          <div>
-            <label>% a mover</label>
-            <input id="mov_pct_${i}" type="number" value="${m.pct}" step="0.1" min="0" max="100" oninput="recalc()" />
-          </div>
-          <div>
-            <label>Poner en</label>
-            <select id="mov_des_${i}" onchange="recalc()">${options}</select>
-          </div>
-        </div>`).join("");
-      moveDefaults.forEach((m, i) => {
-        $("mov_ori_"+i).value = m.origen;
-        $("mov_des_"+i).value = m.destino;
-      });
+            <label>${p.label}</label>
+            <input id="contrib_${p.key}" type="number" step="0.0001" value="${Number(val).toFixed(4)}" oninput="recalc()" />
+          </div>`;
+      }).join("");
     }
 
-    function getPeriodosActuales() {
-      return periodos.map(p => ({ ...p, semanas: Number($("sem_"+p.key).value || 0) }));
-    }
-
-    function getMoves() {
-      return moveDefaults.map((_, i) => ({
-        active: $("mov_act_"+i).checked,
-        origen: $("mov_ori_"+i).value,
-        destino: $("mov_des_"+i).value,
-        pct: Number($("mov_pct_"+i).value || 0)
-      })).filter(m => m.active && m.pct > 0 && m.origen !== m.destino);
+    function getContrib() {
+      return Object.fromEntries(PERIODS.map(p => [p.key, Number($("contrib_"+p.key)?.value || 0)]));
     }
 
     function allocate(total, items, weightFn, keyFn) {
@@ -329,127 +278,107 @@
       let current = rows.reduce((a,r) => a + r.base, 0);
       let diff = target - current;
       if (diff > 0) {
-        const order = [...rows].sort((a,b) => b.rem - a.rem || String(a.key).localeCompare(String(b.key)));
-        for (let i=0; i<diff; i++) rows.find(r => r.key === order[i % order.length].key).base += 1;
+        rows.sort((a,b)=>b.rem-a.rem || String(a.key).localeCompare(String(b.key))).slice(0, diff).forEach(r => r.base += 1);
       } else if (diff < 0) {
-        const order = [...rows].sort((a,b) => a.rem - b.rem || String(a.key).localeCompare(String(b.key)));
-        for (let i=0; i<Math.abs(diff); i++) {
-          const r = rows.find(x => x.key === order[i % order.length].key);
-          if (r.base > 0) r.base -= 1;
-        }
+        rows.sort((a,b)=>a.rem-b.rem || String(a.key).localeCompare(String(b.key))).slice(0, Math.abs(diff)).forEach(r => r.base = Math.max(0, r.base - 1));
       }
       return Object.fromEntries(rows.map(r => [r.key, r.base]));
     }
 
-    function periodTotalsByWeeks(metaTotal, metaAgoOct, periodosActuales) {
-      const agoOct = periodosActuales.filter(p => p.group === "agoOct");
-      const resto = periodosActuales.filter(p => p.group === "resto");
-      const metaResto = Math.round(metaTotal) - Math.round(metaAgoOct);
-      return {
-        ...allocate(metaAgoOct, agoOct, p => p.semanas, p => p.key),
-        ...allocate(metaResto, resto, p => p.semanas, p => p.key)
-      };
+    function campusOrder(cfg) {
+      if (cfg.campusMode === "period") return cfg.campusPeriodWeights.map(r => r.campus);
+      return cfg.campusAnnual.map(r => r.campus);
     }
 
-    function applyMoves(totals, moves) {
-      const out = { ...totals };
-      const ajustes = Object.fromEntries(periodos.map(p => [p.key, 0]));
-      moves.forEach(m => {
-        const origenActual = out[m.origen] || 0;
-        const cantidad = Math.min(origenActual, Math.round(origenActual * m.pct / 100));
-        out[m.origen] -= cantidad;
-        out[m.destino] = (out[m.destino] || 0) + cantidad;
-        ajustes[m.origen] -= cantidad;
-        ajustes[m.destino] += cantidad;
-      });
-      return { totals: out, ajustes };
+    function historyFor(cfg, campus) {
+      return cfg.history[campus] || {"2022":0,"2023":0,"2024":0,"2025":0};
     }
 
-    function getScenario(levelKey, pct, name, type, periodosActuales, moves) {
+    function historyTotals(cfg) {
+      const campuses = campusOrder(cfg);
+      return Object.fromEntries(YEARS.map(y => [y, campuses.reduce((a,c) => a + Number(historyFor(cfg,c)[y] || 0), 0)]));
+    }
+
+    function getPeriodTargets(cfg, metaTotal, isPMP, contrib) {
+      if (isPMP) return {...cfg.pmpPeriodTargets};
+      return allocate(metaTotal, PERIODS, p => contrib[p.key], p => p.key);
+    }
+
+    function getScenario(levelKey, pct, name, type, contrib) {
       const cfg = LEVELS[levelKey];
-      const metaTotal = Math.round(cfg.pmp * (1 + pct / 100));
-      const factorEscenario = cfg.pmp > 0 ? metaTotal / cfg.pmp : 1;
-      const metaAgoOct = Math.round(cfg.metaAgoOct * factorEscenario);
-
-      let baseTotals;
-      let fixedPMP = false;
-      if (levelKey === "profesional" && name === "PMP") {
-        baseTotals = { ...cfg.periodTargets };
-        fixedPMP = true;
-      } else {
-        baseTotals = periodTotalsByWeeks(metaTotal, metaAgoOct, periodosActuales);
-      }
-
-      const moved = fixedPMP ? { totals: {...baseTotals}, ajustes: Object.fromEntries(periodos.map(p => [p.key, 0])) } : applyMoves(baseTotals, moves);
-
-      const periodRows = periodosActuales.map(p => ({
-        key:p.key,
-        periodo:p.label,
-        semanas:p.semanas,
-        antesAjuste:baseTotals[p.key] || 0,
-        ajuste:moved.ajustes[p.key] || 0,
-        meta:moved.totals[p.key] || 0,
-        metaSemanal:p.semanas > 0 ? (moved.totals[p.key] || 0) / p.semanas : 0
-      }));
-
-      const campusRows = campusDistribution(levelKey, periodRows);
+      const isPMP = pct === 0;
+      const metaTotal = isPMP ? cfg.pmp : Math.round(cfg.pmp * (1 + pct/100));
+      const periodTargets = getPeriodTargets(cfg, metaTotal, isPMP, contrib);
+      const periodRows = PERIODS.map(p => {
+        const meta = periodTargets[p.key] || 0;
+        return {
+          key:p.key, periodo:p.label, semanas:p.weeks, contrib: metaTotal ? meta/metaTotal*100 : 0,
+          meta, metaSemanal:p.weeks ? meta/p.weeks : 0
+        };
+      });
+      const campusRows = campusDistribution(cfg, periodTargets, isPMP);
+      const histTotals = historyTotals(cfg);
+      const diffVs2025 = metaTotal - histTotals["2025"];
+      const pctVs2025 = histTotals["2025"] ? diffVs2025 / histTotals["2025"] : NaN;
       return {
-        name, type, pct, metaTotal, metaAgoOct: (periodRows.find(r => r.key==="agosto")?.meta || 0) + (periodRows.find(r => r.key==="octubre")?.meta || 0),
-        metaResto: metaTotal - ((periodRows.find(r => r.key==="agosto")?.meta || 0) + (periodRows.find(r => r.key==="octubre")?.meta || 0)),
+        name, type, pct, metaTotal, periodRows, campusRows,
+        metaAgoOct: (periodTargets.agosto || 0) + (periodTargets.octubre || 0),
+        metaResto: (periodTargets.enero || 0) + (periodTargets.marzo || 0) + (periodTargets.junio || 0),
         factorSemanalEjecutivo: metaTotal / (num("ejecutivos") * num("semanasTotales")),
-        periodRows,
-        campusRows,
-        fixedPMP
+        diffVs2025, pctVs2025
       };
     }
 
-    function campusDistribution(levelKey, periodRows) {
-      const cfg = LEVELS[levelKey];
-      const campusList = levelKey === "posgrado" ? cfg.campusAnnual.map(r => r.campus) : cfg.campusPeriodWeights.map(r => r.campus);
-      const result = campusList.map(campus => ({ campus, agosto:0, octubre:0, enero:0, marzo:0, junio:0, total:0 }));
-
-      periodRows.forEach(pr => {
-        let alloc;
-        if (levelKey === "posgrado") {
-          alloc = allocate(pr.meta, cfg.campusAnnual, c => c.anual, c => c.campus);
-        } else {
-          alloc = allocate(pr.meta, cfg.campusPeriodWeights, c => c[pr.key], c => c.campus);
-        }
-        result.forEach(row => {
-          row[pr.key] = alloc[row.campus] || 0;
-        });
+    function campusDistribution(cfg, periodTargets, isPMP) {
+      const campuses = campusOrder(cfg);
+      const result = campuses.map(campus => {
+        const h = historyFor(cfg, campus);
+        return { campus, "2022":h["2022"]||0, "2023":h["2023"]||0, "2024":h["2024"]||0, "2025":h["2025"]||0, agosto:0, octubre:0, enero:0, marzo:0, junio:0, total:0, diffVs2025:0, pctVs2025:NaN };
       });
-      result.forEach(row => row.total = periodos.reduce((a,p) => a + (row[p.key] || 0), 0));
+
+      PERIODS.forEach(p => {
+        let alloc;
+        if (cfg.campusMode === "annual") {
+          alloc = allocate(periodTargets[p.key] || 0, cfg.campusAnnual, r => r.anual, r => r.campus);
+        } else {
+          alloc = allocate(periodTargets[p.key] || 0, cfg.campusPeriodWeights, r => r[p.key], r => r.campus);
+        }
+        result.forEach(row => { row[p.key] = alloc[row.campus] || 0; });
+      });
+
+      result.forEach(row => {
+        row.total = PERIODS.reduce((a,p)=>a + (row[p.key]||0), 0);
+        row.diffVs2025 = row.total - Number(row["2025"] || 0);
+        row.pctVs2025 = row["2025"] ? row.diffVs2025 / row["2025"] : NaN;
+      });
       return result;
     }
 
     function recalc() {
       const levelKey = $("nivel").value;
       const cfg = LEVELS[levelKey];
-      const pmp = cfg.pmp;
-      const ejecutivos = num("ejecutivos");
-      const semanasTotales = num("semanasTotales");
-      const pisoPct = num("pisoPct");
-      const techoPct = num("techoPct");
-      const periodosActuales = getPeriodosActuales();
-      const moves = getMoves();
-
-      const sumWeeks = periodosActuales.reduce((a,p) => a + p.semanas, 0);
-      const alert = $("weekAlert");
-      if (sumWeeks !== semanasTotales) {
+      const contrib = getContrib();
+      const contribSum = PERIODS.reduce((a,p)=>a + Number(contrib[p.key]||0), 0);
+      const alert = $("contribAlert");
+      if (Math.abs(contribSum - 100) > 0.05) {
         alert.classList.add("show");
-        alert.innerHTML = `La suma de semanas por periodo es <b>${fmt(sumWeeks)}</b>, pero las semanas totales configuradas son <b>${fmt(semanasTotales)}</b>. Revisa el control de semanas totales o las semanas por periodo.`;
+        alert.textContent = `La suma actual de contribuciones es ${fmtDec(contribSum,2)}%.`;
       } else {
         alert.classList.remove("show");
       }
 
+      const pisoPct = num("pisoPct");
+      const techoPct = num("techoPct");
       const scenarios = [
-        getScenario(levelKey, 0, "PMP", "Base fija del nivel", periodosActuales, moves),
-        getScenario(levelKey, pisoPct, "Piso", `PMP + ${fmtDec(pisoPct,1)}%`, periodosActuales, moves),
-        getScenario(levelKey, techoPct, "Techo", `PMP + ${fmtDec(techoPct,1)}%`, periodosActuales, moves)
+        getScenario(levelKey, 0, "PMP", "Base fija del nivel", contrib),
+        getScenario(levelKey, pisoPct, "Piso", `PMP + ${fmtDec(pisoPct,1)}%`, contrib),
+        getScenario(levelKey, techoPct, "Techo", `PMP + ${fmtDec(techoPct,1)}%`, contrib)
       ];
-
-      lastModel = { levelKey, cfg, pmp, ejecutivos, semanasTotales, pisoPct, techoPct, periodosActuales, moves, sumWeeks, scenarios };
+      lastModel = {
+        levelKey, cfg, contrib, contribSum, scenarios,
+        pmp: cfg.pmp, ejecutivos:num("ejecutivos"), semanasTotales:num("semanasTotales"),
+        histTotals: historyTotals(cfg)
+      };
       renderAll(lastModel);
     }
 
@@ -474,7 +403,7 @@
         <div class="metric">
           <div class="label">PMP anual</div>
           <div class="value">${fmt(model.pmp)}</div>
-          <div class="sub">Suma esperada del escenario base</div>
+          <div class="sub">Meta base 2026</div>
         </div>
         <div class="metric small">
           <div class="label">Factor PMP</div>
@@ -482,9 +411,9 @@
           <div class="sub">Inscritos semanales por ejecutivo</div>
         </div>
         <div class="metric small">
-          <div class="label">Validación campus</div>
-          <div class="value">${fmt(campusTotal)}</div>
-          <div class="sub">${campusTotal === model.pmp ? "Coincide con PMP" : "No coincide con PMP"}</div>
+          <div class="label">Histórico 2025</div>
+          <div class="value">${fmt(model.histTotals["2025"])}</div>
+          <div class="sub">${signed(model.pmp - model.histTotals["2025"])} vs PMP</div>
         </div>`;
     }
 
@@ -498,15 +427,20 @@
       `;
     }
 
+    function tdDiff(n) { return `<span class="${n >= 0 ? "pos" : "neg"}">${signed(n)}</span>`; }
+    function tdPct(n) { return `<span class="${Number.isFinite(n) && n >= 0 ? "pos" : "neg"}">${pctFmt(n)}</span>`; }
+
     function renderScenarioSummary(model) {
       $("scenarioSummary").innerHTML = model.scenarios.map(s => `
         <tr>
-          <td><b>${s.name}</b><br><span class="note">${s.type}${s.fixedPMP ? " · PMP fijo" : ""}</span></td>
+          <td><b>${s.name}</b><br><span class="note">${s.type}</span></td>
           <td class="num">${fmtDec(s.pct,1)}%</td>
           <td class="num"><b>${fmt(s.metaTotal)}</b></td>
           <td class="num">${fmt(s.metaAgoOct)}</td>
           <td class="num">${fmt(s.metaResto)}</td>
           <td class="num"><b>${fmtDec(s.factorSemanalEjecutivo,3)}</b></td>
+          <td class="num">${tdDiff(s.diffVs2025)}</td>
+          <td class="num">${tdPct(s.pctVs2025)}</td>
         </tr>`).join("");
     }
 
@@ -514,31 +448,28 @@
       $("periodTables").innerHTML = model.scenarios.map(s => `
         <div class="scenario-card card card-pad">
           <div style="display:flex;justify-content:space-between;gap:10px;align-items:start;margin-bottom:10px;">
-            <div><h3>${s.name}</h3><span class="note">${s.type}</span></div>
+            <div><h3>${s.name}</h3><span class="note">${s.type} / ${pctFmt(s.pctVs2025)} vs 2025</span></div>
             <span class="badge">${fmt(s.metaTotal)} NI</span>
           </div>
           <div class="table-wrap" style="max-height:none;">
             <table>
-              <thead><tr><th>Periodo</th><th class="num">Sem.</th><th class="num">Antes ajuste</th><th class="num">Ajuste</th><th class="num">Meta final</th></tr></thead>
+              <thead><tr><th>Periodo</th><th class="num">Sem.</th><th class="num">% contribución</th><th class="num">Meta</th><th class="num">Meta semanal</th></tr></thead>
               <tbody>${s.periodRows.map(r => `
                 <tr>
                   <td>${r.periodo}</td>
                   <td class="num">${fmt(r.semanas)}</td>
-                  <td class="num">${fmt(r.antesAjuste)}</td>
-                  <td class="num">${r.ajuste > 0 ? "+" : ""}${fmt(r.ajuste)}</td>
+                  <td class="num">${fmtDec(r.contrib,2)}%</td>
                   <td class="num"><b>${fmt(r.meta)}</b></td>
+                  <td class="num">${fmtDec(r.metaSemanal,1)}</td>
                 </tr>`).join("")}</tbody>
-              <tfoot><tr><td>Total</td><td class="num">${fmt(s.periodRows.reduce((a,r)=>a+r.semanas,0))}</td><td class="num">${fmt(s.periodRows.reduce((a,r)=>a+r.antesAjuste,0))}</td><td class="num">${fmt(s.periodRows.reduce((a,r)=>a+r.ajuste,0))}</td><td class="num">${fmt(s.periodRows.reduce((a,r)=>a+r.meta,0))}</td></tr></tfoot>
+              <tfoot><tr><td>Total</td><td class="num">${fmt(s.periodRows.reduce((a,r)=>a+r.semanas,0))}</td><td class="num">${fmtDec(s.periodRows.reduce((a,r)=>a+r.contrib,0),2)}%</td><td class="num">${fmt(s.periodRows.reduce((a,r)=>a+r.meta,0))}</td><td></td></tr></tfoot>
             </table>
           </div>
         </div>`).join("");
     }
 
     function renderCampusTables(model) {
-      const levelText = model.levelKey === "profesional"
-        ? "Profesional usa la distribución PMP por campus y periodo precargada. El PMP queda fijo; Piso y Techo se asignan por periodo usando la participación de cada campus dentro de cada periodo."
-        : "Posgrado usa la distribución anual PMP por campus. Cada periodo se reparte respetando la participación anual de cada campus.";
-      $("campusNote").textContent = levelText;
+      $("campusNote").textContent = `${model.cfg.label}: histórico 2022-2025, metas 2026 por periodo y comparación contra 2025.`;
       $("campusTables").innerHTML = model.scenarios.map(s => `
         <div class="scenario-card card card-pad">
           <div style="display:flex;justify-content:space-between;gap:10px;align-items:start;margin-bottom:10px;">
@@ -548,27 +479,37 @@
           <div class="table-wrap">
             <table>
               <thead>
-                <tr><th>Campus</th><th class="num">Agosto</th><th class="num">Octubre</th><th class="num">Enero</th><th class="num">Marzo</th><th class="num">Junio</th><th class="num">Total</th></tr>
+                <tr>
+                  <th>Campus</th>
+                  <th class="num">2022</th><th class="num">2023</th><th class="num">2024</th><th class="num">2025</th>
+                  <th class="num">Agosto</th><th class="num">Octubre</th><th class="num">Enero</th><th class="num">Marzo</th><th class="num">Junio</th>
+                  <th class="num">Total 2026</th><th class="num">Dif. vs 2025</th><th class="num">% vs 2025</th>
+                </tr>
               </thead>
               <tbody>${s.campusRows.map(r => `
                 <tr>
                   <td>${r.campus}</td>
+                  <td class="num">${fmt(r["2022"])}</td>
+                  <td class="num">${fmt(r["2023"])}</td>
+                  <td class="num">${fmt(r["2024"])}</td>
+                  <td class="num">${fmt(r["2025"])}</td>
                   <td class="num">${fmt(r.agosto)}</td>
                   <td class="num">${fmt(r.octubre)}</td>
                   <td class="num">${fmt(r.enero)}</td>
                   <td class="num">${fmt(r.marzo)}</td>
                   <td class="num">${fmt(r.junio)}</td>
                   <td class="num"><b>${fmt(r.total)}</b></td>
+                  <td class="num">${tdDiff(r.diffVs2025)}</td>
+                  <td class="num">${tdPct(r.pctVs2025)}</td>
                 </tr>`).join("")}</tbody>
               <tfoot>
                 <tr>
                   <td>Total</td>
-                  <td class="num">${fmt(s.campusRows.reduce((a,r)=>a+r.agosto,0))}</td>
-                  <td class="num">${fmt(s.campusRows.reduce((a,r)=>a+r.octubre,0))}</td>
-                  <td class="num">${fmt(s.campusRows.reduce((a,r)=>a+r.enero,0))}</td>
-                  <td class="num">${fmt(s.campusRows.reduce((a,r)=>a+r.marzo,0))}</td>
-                  <td class="num">${fmt(s.campusRows.reduce((a,r)=>a+r.junio,0))}</td>
+                  ${YEARS.map(y=>`<td class="num">${fmt(s.campusRows.reduce((a,r)=>a+Number(r[y]||0),0))}</td>`).join("")}
+                  ${PERIODS.map(p=>`<td class="num">${fmt(s.campusRows.reduce((a,r)=>a+Number(r[p.key]||0),0))}</td>`).join("")}
                   <td class="num">${fmt(s.campusRows.reduce((a,r)=>a+r.total,0))}</td>
+                  <td class="num">${tdDiff(s.campusRows.reduce((a,r)=>a+r.total,0) - s.campusRows.reduce((a,r)=>a+Number(r["2025"]||0),0))}</td>
+                  <td class="num">${tdPct(s.campusRows.reduce((a,r)=>a+Number(r["2025"]||0),0) ? (s.campusRows.reduce((a,r)=>a+r.total,0) - s.campusRows.reduce((a,r)=>a+Number(r["2025"]||0),0)) / s.campusRows.reduce((a,r)=>a+Number(r["2025"]||0),0) : NaN)}</td>
                 </tr>
               </tfoot>
             </table>
@@ -579,8 +520,9 @@
     function renderExecutiveSummary(model) {
       const pmp = model.scenarios[0];
       $("execSummary").innerHTML = `
-        El simulador está configurado para <b>${model.cfg.label}</b>. El PMP anual queda fijo en <b>${fmt(model.pmp)}</b> inscritos y la meta base de agosto + octubre queda fija en <b>${fmt(model.cfg.metaAgoOct)}</b>. Con <b>${fmt(model.ejecutivos)}</b> ejecutivos y <b>${fmt(model.semanasTotales)}</b> semanas, el factor del PMP es <b>${fmtDec(pmp.factorSemanalEjecutivo,3)}</b> inscritos semanales por ejecutivo. 
-        Para los escenarios Piso y Techo, la meta anual se calcula como un incremento porcentual sobre el PMP. En Profesional, la distribución PMP por campus y periodo se mantiene como base fija; en Piso y Techo, los nuevos totales por periodo se reparten según la participación de cada campus dentro de cada periodo.`;
+        El simulador está configurado para <b>${model.cfg.label}</b>. El PMP anual queda fijo en <b>${fmt(model.pmp)}</b> inscritos y la meta base de agosto + octubre queda fija en <b>${fmt(model.cfg.metaAgoOct)}</b>. 
+        Con <b>${fmt(model.ejecutivos)}</b> ejecutivos y <b>${fmt(model.semanasTotales)}</b> semanas, el factor del PMP es <b>${fmtDec(pmp.factorSemanalEjecutivo,3)}</b> inscritos semanales por ejecutivo. 
+        La comparación principal se realiza contra el histórico 2025 de <b>${fmt(model.histTotals["2025"])}</b> inscritos.`;
     }
 
     function csvCell(v) {
@@ -596,31 +538,32 @@
       lines.push(row(["Nivel", m.cfg.label]));
       lines.push(row(["PMP", m.pmp]));
       lines.push(row(["Meta base ago+oct", m.cfg.metaAgoOct]));
+      lines.push(row(["Histórico 2025", m.histTotals["2025"]]));
       lines.push("");
 
       lines.push(row(["Resumen de escenarios"]));
-      lines.push(row(["Escenario","% sobre PMP","Meta anual","Ago+Oct","Ene+Mar+Jun","Factor semanal ejecutivo"]));
-      m.scenarios.forEach(s => lines.push(row([s.name, s.pct, s.metaTotal, s.metaAgoOct, s.metaResto, fmtDec(s.factorSemanalEjecutivo,3)])));
+      lines.push(row(["Escenario","% sobre PMP","Meta anual","Ago+Oct","Ene+Mar+Jun","Factor semanal ejecutivo","Dif. vs 2025","% vs 2025"]));
+      m.scenarios.forEach(s => lines.push(row([s.name, s.pct, s.metaTotal, s.metaAgoOct, s.metaResto, fmtDec(s.factorSemanalEjecutivo,3), s.diffVs2025, pctFmt(s.pctVs2025)])));
       lines.push("");
 
       m.scenarios.forEach(s => {
         lines.push(row([`Desglose por periodo - ${s.name}`]));
-        lines.push(row(["Periodo","Semanas","Antes ajuste","Ajuste","Meta final","Meta semanal"]));
-        s.periodRows.forEach(r => lines.push(row([r.periodo,r.semanas,r.antesAjuste,r.ajuste,r.meta,fmtDec(r.metaSemanal,2)])));
+        lines.push(row(["Meta anual", s.metaTotal, "Histórico 2025", m.histTotals["2025"], "Dif. vs 2025", s.diffVs2025, "% vs 2025", pctFmt(s.pctVs2025)]));
+        lines.push(row(["Periodo","Semanas","% contribución","Meta","Meta semanal"]));
+        s.periodRows.forEach(r => lines.push(row([r.periodo,r.semanas,fmtDec(r.contrib,4),r.meta,fmtDec(r.metaSemanal,2)])));
         lines.push("");
       });
 
       m.scenarios.forEach(s => {
         lines.push(row([`Distribución por campus - ${s.name} - ${m.cfg.label}`]));
-        lines.push(row(["Campus","Agosto","Octubre","Enero","Marzo","Junio","Total"]));
-        s.campusRows.forEach(r => lines.push(row([r.campus,r.agosto,r.octubre,r.enero,r.marzo,r.junio,r.total])));
+        lines.push(row(["Campus","2022","2023","2024","2025","Agosto","Octubre","Enero","Marzo","Junio","Total 2026","Dif. vs 2025","% vs 2025"]));
+        s.campusRows.forEach(r => lines.push(row([r.campus,r["2022"],r["2023"],r["2024"],r["2025"],r.agosto,r.octubre,r.enero,r.marzo,r.junio,r.total,r.diffVs2025,pctFmt(r.pctVs2025)])));
         lines.push(row(["Total",
-          s.campusRows.reduce((a,r)=>a+r.agosto,0),
-          s.campusRows.reduce((a,r)=>a+r.octubre,0),
-          s.campusRows.reduce((a,r)=>a+r.enero,0),
-          s.campusRows.reduce((a,r)=>a+r.marzo,0),
-          s.campusRows.reduce((a,r)=>a+r.junio,0),
-          s.campusRows.reduce((a,r)=>a+r.total,0)
+          ...YEARS.map(y=>s.campusRows.reduce((a,r)=>a+Number(r[y]||0),0)),
+          ...PERIODS.map(p=>s.campusRows.reduce((a,r)=>a+Number(r[p.key]||0),0)),
+          s.campusRows.reduce((a,r)=>a+r.total,0),
+          s.campusRows.reduce((a,r)=>a+r.total,0) - s.campusRows.reduce((a,r)=>a+Number(r["2025"]||0),0),
+          pctFmt(s.campusRows.reduce((a,r)=>a+Number(r["2025"]||0),0) ? (s.campusRows.reduce((a,r)=>a+r.total,0) - s.campusRows.reduce((a,r)=>a+Number(r["2025"]||0),0)) / s.campusRows.reduce((a,r)=>a+Number(r["2025"]||0),0) : NaN)
         ]));
         lines.push("");
       });
@@ -629,15 +572,14 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `metas_captacion_${m.cfg.label.toLowerCase()}.csv`;
+      a.download = `metas_captacion_${m.cfg.label.toLowerCase()}_v5.csv`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     }
 
-    renderPeriodInputs();
-    renderMoves();
+    renderStaticWeeks();
     syncNivel();
     recalc();
   </script>
